@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-100 text-zinc-800 font-sans">
+
+    <div class="w-full min-h-screen p-4">
+        <div class="w-full max-w-md mx-auto">
+            <h3> <%=user.username%>, what's on your mind?</h3>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-zinc-200 p-4 mb-6">
+            
+                <textarea 
+                    placeholder="What's on your mind, Alex?"
+                    class="w-full bg-zinc-50 rounded-lg border border-zinc-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-24 mb-3 placeholder:text-zinc-400"
+                ></textarea>
+                
+                <div class="flex justify-end">
+                    <button class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
+                        Post
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                
+                <div class="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden">
+                    
+                    <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
+                                JD
+                            </div>
+                            <h3 class="font-semibold text-zinc-900 text-sm">@john_doe</h3>
+                        </div>
+                        <span class="text-xs text-zinc-400">2h ago</span>
+                    </div>
+
+                    <div class="px-4 py-4">
+                        <p class="text-sm leading-relaxed tracking-wide text-zinc-700">
+                            Just finished setting up the new backend architecture using Node.js and Express. It's looking really solid so far! 🚀
+                        </p>
+                    </div>
+
+                    <div class="px-4 py-3 bg-zinc-50 border-t border-zinc-100">
+                        <button class="flex items-center gap-2 text-sm text-red-500 font-medium group transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current transition-transform group-active:scale-125" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <span>12 Likes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden">
+                    
+                    <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs">
+                                S
+                            </div>
+                            <h3 class="font-semibold text-zinc-900 text-sm">@sarah_dev</h3>
+                        </div>
+                        <span class="text-xs text-zinc-400">5h ago</span>
+                    </div>
+
+                    <div class="px-4 py-4">
+                        <p class="text-sm leading-relaxed tracking-wide text-zinc-700">
+                            Does anyone know the best way to handle authentication tokens in Flutter? I'm debating between SharedPreferences and SecureStorage.
+                        </p>
+                    </div>
+
+                    <div class="px-4 py-3 bg-zinc-50 border-t border-zinc-100">
+                        <button class="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-700 font-medium group transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-none stroke-current transition-transform group-active:scale-125" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <span>Like</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

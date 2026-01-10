@@ -30,6 +30,8 @@
                     name="email" 
                     required 
                     placeholder="you@example.com"
+                    autocomplete="username"
+                    value="<%= locals.savedEmail ? savedEmail : '' %>"
                     class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                 >
             </div>
@@ -45,6 +47,7 @@
                     name="password" 
                     required 
                     placeholder="••••••••"
+                    autocomplete="current-password"
                     class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                 >
             </div>
@@ -69,6 +72,17 @@
             </p>
         </div>
     </div>
+
+    <script>
+        // Auto-focus password if email is already filled (UX improvement)
+        window.onload = () => {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            if (emailInput.value !== "") {
+                passwordInput.focus();
+            }
+        };
+    </script>
 
 </body>
 </html>

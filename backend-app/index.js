@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(cookieParser());
 
 
 
@@ -39,7 +40,7 @@ app.post('/loginprocess', async (req, res) => {
   if(correctPassword){
     let usetoken =jwt.sign({email:email,username:user.username},"notproductiongradeapp");
     res.cookie("token",usetoken);
-    res.status(200).send("this is the correct user");
+    res.status(200).redirect('/posts');
 
     
 
@@ -56,6 +57,7 @@ app.post('/loginprocess', async (req, res) => {
 
 
 app.post("/create", async (req, res) => {
+
   try {
     let { username, age, password, email, name } = req.body;
 
@@ -74,10 +76,10 @@ app.post("/create", async (req, res) => {
       email
     });
 
-     let token=jwt.sign({email:email,username:username },"notproductiongradeapp");
+    let token=jwt.sign({email:email,username:username },"notproductiongradeapp");
     await user.save();
     res.cookie("token",token);
-    res.status(201).send("User created successfully");
+    res.status(201).redirect('/posts');
   } catch (err) {
     console.log(err);
     res.status(500).send("Something went wrong");
@@ -89,18 +91,28 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
+
+;
+app.get('/posts', isloggedIn, async (req, res) => {
+  let user = await UserModel.findOne({ email: req.user.email });
+  console.log(user);
+  res.render('posts', { user });
+});
+
+
 // middle wares to the protected routes to check the user logged in or not 
 
 function isloggedIn(req,res,next){
   let token =req.cookies.token;
-  if(token===undefined) return res.send("please login first");
+  if(token===undefined) return res.redirect('/login');
  else{
   let verifytoken =jwt.verify(token,"notproductiongradeapp");
   if(verifytoken){
-    res.status(500).send("internal server error issue occured");
+   req.user = verifytoken;
+   next();
   }
   else{
-    next();
+   res.status(309).redirect('/login');
   }
 
  }
@@ -109,7 +121,9 @@ function isloggedIn(req,res,next){
 }
 
 
+app.post('/createpost',isloggedIn,(req,res)=>{
 
+});
 
 
 
