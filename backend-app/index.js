@@ -14,30 +14,55 @@ const UserModel = require("./models/user");
 // middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// ✅ tell express to use EJS
 app.set("view engine", "ejs");
-
-// ✅ tell express where views a
 app.set("views", path.join(__dirname, "views"));
 
-// test route
-app.get("/", (req, res) => {
+
+
+
+app.get("/",(req, res) => {
   res.render('index')
 });
-// render EJS file
+
+app.get("/login", (req, res) => {
+  res.render('login')
+});
+
+
+app.post('/loginprocess', async (req, res) => {
+
+  let {email,password} =req.body;
+  let user = await UserModel.findOne({email:email});
+  if(!user) return res.status(309).send("the user doesnot existand the allthigns");
+
+  let correctPassword =bcrypt.compare(password,user.password);
+  if(correctPassword){
+    let usetoken =jwt.sign({email:email,username:user.username},"notproductiongradeapp");
+    res.cookie("token",usetoken);
+    res.status(200).send("this is the correct user");
+
+    
+
+
+  }
+  else{
+    res.redirect('/');
+  }
+
+
+});
+
+
+
 
 app.post("/create", async (req, res) => {
   try {
     let { username, age, password, email, name } = req.body;
 
-    // 1. Fix typo (findOne) and use await
     let existingUser = await UserModel.findOne({ email: email });
     
-    // 2. Check if user was found
     if (existingUser) return res.status(409).send("The user already exists, please login");
 
-    // 3. Use await for bcrypt
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
@@ -50,17 +75,51 @@ app.post("/create", async (req, res) => {
     });
 
      let token=jwt.sign({email:email,username:username },"notproductiongradeapp");
-
-
-    // 4. Wait for the save to complete
     await user.save();
     res.cookie("token",token);
-    console.log(token);
     res.status(201).send("User created successfully");
   } catch (err) {
+    console.log(err);
     res.status(500).send("Something went wrong");
   }
 });
+
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/');
+});
+
+// middle wares to the protected routes to check the user logged in or not 
+
+function isloggedIn(req,res,next){
+  let token =req.cookies.token;
+  if(token===undefined) return res.send("please login first");
+ else{
+  let verifytoken =jwt.verify(token,"notproductiongradeapp");
+  if(verifytoken){
+    res.status(500).send("internal server error issue occured");
+  }
+  else{
+    next();
+  }
+
+ }
+  
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
