@@ -8,8 +8,10 @@ const cookieParser = require("cookie-parser");
 
 mongoose.connect("mongodb://localhost:27017/jashan");
 
-// model
+
 const UserModel = require("./models/user");
+const PostModel = require("./models/posts");
+
 
 // middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
@@ -95,12 +97,54 @@ app.get('/logout', (req, res) => {
 ;
 app.get('/posts', isloggedIn, async (req, res) => {
   let user = await UserModel.findOne({ email: req.user.email });
+  let posts = (await PostModel.find().populate('createdby')).reverse();
   console.log(user);
-  res.render('posts', { user });
+  res.render('posts', { user,posts });
 });
 
 
-// middle wares to the protected routes to check the user logged in or not 
+
+
+
+
+
+app.post('/createpost',isloggedIn, async (req, res) => {
+    try {
+        const { content } = req.body;
+        
+        // Validate input
+        if (!content || content.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Content is required' 
+            }).redirect('/posts');
+        }
+
+        let user = await UserModel.findOne({ email: req.user.email });
+
+        // Create post
+        const post = await PostModel.create({
+            content: content.trim(),
+            createdby: user._id,
+         
+        });
+
+
+       res.redirect('/posts');
+
+    } catch (error) {
+        console.error('Error creating post:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+//midle wares to the protected routes to check the user logged in or not 
+
+
+
 
 function isloggedIn(req,res,next){
   let token =req.cookies.token;
@@ -121,9 +165,7 @@ function isloggedIn(req,res,next){
 }
 
 
-app.post('/createpost',isloggedIn,(req,res)=>{
 
-});
 
 
 

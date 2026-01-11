@@ -1,31 +1,24 @@
-const moongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-const PostSchema = moongoose.SchemaType({
-
-    // the schemea needed is the like 
-    title:{
-        type:String,
-        required :true,
-        trim:true,
-    
+const PostSchema = new mongoose.Schema({
+    content: {
+        type: String,
+        required: true,
+        trim: true,
     },
-   likes: [
-    {
-        user:{
-            type:moongoose.Schema.Types.ObjectId,
-            ref:'user',
-          
+    createdby: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',  
+        required: true,
+    },
+    likes: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user',
         }
-    }
-   ],
-  
-
-    
-   
-
-
-},{
-    timestamps:true,
+    }]
+}, {
+    timestamps: true,
 });
 
-module.exports = moongoose.model('Post', PostSchema);
+module.exports = mongoose.model('Post', PostSchema);
