@@ -1,0 +1,84 @@
+Project Name: backend-app
+
+This project is a simple social media application with user authentication and post creation features.
+
+**Project Structure:**
+
+```
+backend-app/
+├── apis.txt
+├── index.js
+├── package.json
+├── package-lock.json
+├── models/
+│   ├── posts.js
+│   └── user.js
+├── views/
+│   ├── index.ejs
+│   ├── login.ejs
+│   └── posts.ejs
+└── node_modules/
+```
+
+**File Descriptions:**
+
+*   **`index.js`**: The main entry point of the application. It sets up the Express server, defines the API routes, and connects to the MongoDB database.
+*   **`package.json`**: Contains metadata about the project and a list of its dependencies.
+*   **`package-lock.json`**: Records the exact version of each dependency used in the project.
+*   **`models/`**: This directory contains the Mongoose data models.
+    *   **`user.js`**: Defines the schema for the `User` collection in MongoDB.
+    *   **`posts.js`**: Defines the schema for the `Post` collection in MongoDB.
+*   **`views/`**: This directory contains the EJS templates for rendering the application's views.
+    *   **`index.ejs`**: The template for the home page.
+    *   **`login.ejs`**: The template for the login page.
+    *   **`posts.ejs`**: The template for displaying posts.
+*   **`apis.txt`**: This file, providing a summary of the project and its APIs.
+
+**Technologies Used:**
+
+*   **Node.js**: A JavaScript runtime for server-side development.
+*   **Express.js**: A web application framework for Node.js.
+*   **MongoDB**: A NoSQL database for storing application data.
+*   **Mongoose**: An Object Data Modeling (ODM) library for MongoDB and Node.js.
+*   **EJS**: A simple templating language for generating HTML markup with plain JavaScript.
+*   **bcrypt**: A library for hashing passwords.
+*   **JSON Web Tokens (JWT)**: A standard for creating access tokens.
+*   **cookie-parser**: Middleware for parsing cookies in Express.js.
+
+**APIs:**
+
+- GET /
+  - Description: Renders the home page.
+  - Authentication: None
+
+- GET /login
+  - Description: Renders the login page.
+  - Authentication: None
+
+- POST /loginprocess
+  - Description: Handles user login.
+  - Body: { "email": "user@example.com", "password": "password" }
+  - Authentication: None
+
+- POST /create
+  - Description: Creates a new user.
+  - Body: { "username": "newuser", "age": 25, "password": "password", "email": "newuser@example.com", "name": "New User" }
+  - Authentication: None
+
+- GET /logout
+  - Description: Logs the user out by clearing the authentication token cookie.
+  - Authentication: None
+
+- GET /posts
+  - Description: Displays all posts.
+  - Authentication: Required (JWT token in cookie)
+
+- POST /createpost
+  - Description: Creates a new post.
+  - Body: { "content": "This is a new post." }
+  - Authentication: Required (JWT token in cookie)
+
+- POST /like/:id
+  - Description: Likes or unlikes a post.
+  - Parameters: id - The ID of the post to like/unlike.
+  - Authentication: Required (JWT token in cookie)

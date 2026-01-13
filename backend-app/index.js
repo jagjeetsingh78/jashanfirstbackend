@@ -162,7 +162,7 @@ function isloggedIn(req,res,next){
  }
   
 
-}
+ 
 
 
 
@@ -170,7 +170,19 @@ function isloggedIn(req,res,next){
 
 
 
-
+app.post('/like/:id', isloggedIn, async (req, res) => {
+  let post = await PostModel.findById(req.params.id);
+  
+ 
+  if (post.likes.indexOf(req.user.userid) === -1) {
+    post.likes.push(req.user.userid);
+  } else {
+    post.likes.splice(post.likes.indexOf(req.user.userid), 1);
+  }
+  
+  await post.save();
+  res.redirect('/posts');
+});
 
 
 
