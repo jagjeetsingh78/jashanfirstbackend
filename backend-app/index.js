@@ -8,14 +8,17 @@ const cookieParser = require("cookie-parser");
 
 mongoose.connect("mongodb://localhost:27017/jashan");
 
-// model
+
 const UserModel = require("./models/user");
+const PostModel = require("./models/posts");
+
 
 // middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(cookieParser());
 
 
 
@@ -39,7 +42,7 @@ app.post('/loginprocess', async (req, res) => {
   if(correctPassword){
     let usetoken =jwt.sign({email:email,username:user.username},"notproductiongradeapp");
     res.cookie("token",usetoken);
-    res.status(200).send("this is the correct user");
+    res.status(200).redirect('/posts');
 
     
 
@@ -56,6 +59,7 @@ app.post('/loginprocess', async (req, res) => {
 
 
 app.post("/create", async (req, res) => {
+
   try {
     let { username, age, password, email, name } = req.body;
 
@@ -74,10 +78,10 @@ app.post("/create", async (req, res) => {
       email
     });
 
-     let token=jwt.sign({email:email,username:username },"notproductiongradeapp");
+    let token=jwt.sign({email:email,username:username },"notproductiongradeapp");
     await user.save();
     res.cookie("token",token);
-    res.status(201).send("User created successfully");
+    res.status(201).redirect('/posts');
   } catch (err) {
     console.log(err);
     res.status(500).send("Something went wrong");
@@ -89,24 +93,76 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// middle wares to the protected routes to check the user logged in or not 
+
+;
+app.get('/posts', isloggedIn, async (req, res) => {
+  let user = await UserModel.findOne({ email: req.user.email });
+  let posts = (await PostModel.find().populate('createdby')).reverse();
+  console.log(user);
+  res.render('posts', { user,posts });
+});
+
+
+
+
+
+
+
+app.post('/createpost',isloggedIn, async (req, res) => {
+    try {
+        const { content } = req.body;
+        
+        // Validate input
+        if (!content || content.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Content is required' 
+            }).redirect('/posts');
+        }
+
+        let user = await UserModel.findOne({ email: req.user.email });
+
+        // Create post
+        const post = await PostModel.create({
+            content: content.trim(),
+            createdby: user._id,
+         
+        });
+
+
+       res.redirect('/posts');
+
+    } catch (error) {
+        console.error('Error creating post:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+//midle wares to the protected routes to check the user logged in or not 
+
+
+
 
 function isloggedIn(req,res,next){
   let token =req.cookies.token;
-  if(token===undefined) return res.send("please login first");
+  if(token===undefined) return res.redirect('/login');
  else{
   let verifytoken =jwt.verify(token,"notproductiongradeapp");
   if(verifytoken){
-    res.status(500).send("internal server error issue occured");
+   req.user = verifytoken;
+   next();
   }
   else{
-    next();
+   res.status(309).redirect('/login');
   }
 
  }
   
 
-}
+ 
 
 
 
@@ -114,7 +170,19 @@ function isloggedIn(req,res,next){
 
 
 
-
+app.post('/like/:id', isloggedIn, async (req, res) => {
+  let post = await PostModel.findById(req.params.id);
+  
+ 
+  if (post.likes.indexOf(req.user.userid) === -1) {
+    post.likes.push(req.user.userid);
+  } else {
+    post.likes.splice(post.likes.indexOf(req.user.userid), 1);
+  }
+  
+  await post.save();
+  res.redirect('/posts');
+});
 
 
 
